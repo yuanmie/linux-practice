@@ -1,0 +1,74 @@
+/*
+ *cp1.c
+ *使用read和write实现cp的功能
+ *使用:cp1 src dest
+ */
+
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+#define  BUFFERSIZE 4996
+#define  COPYMODE 0644
+
+void oops(char *, char *);
+
+int main(int argc, char *argv[])
+{
+     int in_fd, out_fd, n_chars;
+     char buf[BUFFERSIZE];
+
+     //检测用法是否正确
+     if (argc != 3)
+     {
+	  fprintf(stderr,"usage:%s source destination\n", *argv);
+	  exit(1);
+     }
+
+     if (strcmp(argv[1],argv[2]) == 0)
+     {
+	  fprintf(stderr,"usage:dest cann't same as src!\n");
+	  exit(1);
+     }
+
+     //打开源文件，如果失败，则报错
+     if ((in_fd = open(argv[1], O_RDONLY)) == -1)
+     {
+	  
+	  oops("Cannot open", argv[1]);
+     }
+
+     //创建目标文件
+     if ((out_fd = creat(argv[2], COPYMODE)) == -1)
+     {
+	  oops("Cannot create", argv[2]);
+     }
+
+     //将源文件中的内容复制到目标文件
+     while ((n_chars = read(in_fd, buf, BUFFERSIZE)) > 0)
+     {
+	  //写入目标文件错误
+	  if (write(out_fd, buf, n_chars) != n_chars)
+	  {
+	       oops("Write error to", argv[2]);
+	  }
+     }
+     //读文件错误
+     if (n_chars == -1)
+	  oops("Read error from", argv[1]);
+
+     if (close(in_fd) == -1 || close(out_fd) == -1)
+	  oops("Error closing files","");
+}
+
+void oops(char *s1, char *s2)
+{
+     fprintf(stderr, "Error: %s", s1);
+     perror(s2);
+     exit(1);
+}
+
+     
