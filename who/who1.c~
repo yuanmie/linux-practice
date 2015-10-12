@@ -1,0 +1,48 @@
+/*
+who1. -a first version of the who program
+*/
+
+#include <stdio.h>
+#include <utmp.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#define SHOWHOST
+void show_info(struct utmp*);
+
+int main()
+{
+     struct utmp current_record; //向这里读入信息
+     int utmpfd; //读取的文件描述符
+     int reclen = sizeof(current_record);
+
+     if ((utmpfd = open(UTMP_FILE, O_RDONLY)) == -1)
+     {
+	  perror(UTMP_FILE);  //UTMP_FILE is in utmp.h
+	  exit(1);
+     }
+
+     while (read(utmpfd, &current_record, reclen) == reclen)
+	  show_info(&current_record);
+
+     close(utmpfd);
+     return 0;
+}
+
+/*
+ *show_info()
+ *以人类可读的形式输出utmp_record中的内容
+ */
+
+void show_info(struct utmp *utbufp)
+{
+     printf("% -8.8s", utbufp->ut_name); /* 登录名 */
+     printf(" ");
+     printf("% -8.8s", utbufp->ut_line); /* 终端名 */
+     printf(" ");
+     printf("%10ld", utbufp->ut_time); //时间
+     printf(" ");
+#ifdef SHOWHOST
+     printf("(%s)", utbufp->ut_host); /*主机名*/
+#endif
+     printf("\n");
