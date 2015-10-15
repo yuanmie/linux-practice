@@ -1,0 +1,1 @@
+这里是练习stty的代码,echostate是打印终端回显位的状态，setecho是设置终端回显位，showstty是显示终端的设置。
