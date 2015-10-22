@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <unistd.h>
+
+
+int main(int argc, char *argv[])
+{
+     FILE *fp;
+     if (argc != 2)
+     {
+	  printf("usage: readimg img!!!\n");
+	  return ;
+     }
+     
+     fp = open(argv[1]);
+     char buf[60];
+     int n = 0;
+     while((n = read(fd, buf, 60)) != -1)
+	  write(1, buf, n);
+     return 0;
+}
